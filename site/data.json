@@ -1,0 +1,9 @@
+{
+  "college": "Your College Name",
+  "code": "REPLACE_WITH_TOKEN",
+  "labs": [
+    { "name": "Computer Lab 1", "opens": "09:00", "closes": "11:00" },
+    { "name": "Physics Lab", "opens": "11:30", "closes": "13:00" },
+    { "name": "Chemistry Lab", "opens": "14:00", "closes": "16:00" }
+  ]
+}
