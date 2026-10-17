@@ -1,0 +1,30 @@
+name: Deploy college site
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write build info
+        run: |
+          REDEPLOYED=false
+          if [ "${{ github.run_number }}" -ge 2 ]; then REDEPLOYED=true; fi
+          printf '{"deployed_by":"github-actions","sha":"%s","run":%s,"redeployed":%s}\n' \
+            "${{ github.sha }}" "${{ github.run_number }}" "$REDEPLOYED" > site/build.json
+
+      - name: Upload to Azure Storage
+        env:
+          SAS: ${{ secrets.AZURE_SAS_TOKEN }}
+        run: |
+          az storage blob upload-batch \
+            --account-name "${{ vars.STORAGE_ACCOUNT }}" \
+            --sas-token "$SAS" \
+            --destination site --source site --overwrite \
+            --content-cache-control "no-cache" \
+            --output none
+          echo "Site: https://${{ vars.STORAGE_ACCOUNT }}.blob.core.windows.net/site/index.html"
